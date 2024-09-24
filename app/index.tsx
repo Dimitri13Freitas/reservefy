@@ -24,11 +24,40 @@ export default function Index() {
         <Input type="email" label="Email:" placeholder="Digite seu email" />
         <Input type="password" label="Senha:" placeholder="•••••••••" />
         <Pressable>
-          <Text style={[styles.simpleLink, { textAlign: "right" }]}>
+          <Text
+            style={[
+              styles.simpleLink,
+              { textAlign: "right" },
+              styles.textLightColor,
+            ]}
+          >
             Esqueceu a senha?
           </Text>
         </Pressable>
         <Button text="Entrar" />
+        <View
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <Text
+            style={[
+              { textAlign: "center", fontSize: 16, marginTop: 16 },
+              styles.textDarkColor,
+            ]}
+          >
+            Ainda não possui conta?
+          </Text>
+          <Pressable>
+            <Text style={[styles.simpleLink, styles.textLightColor]}>
+              Cadastre-se aqui
+            </Text>
+          </Pressable>
+        </View>
       </View>
       <LottieView
         style={{

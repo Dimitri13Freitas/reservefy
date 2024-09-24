@@ -22,7 +22,6 @@ export function Input({ placeholder, type, label }: InputProps) {
             styles.input,
             focus ? styles.inputFocus : null,
             {
-              // backgroundColor: "red",
               display: "flex",
               flexDirection: "row",
               alignItems: "center",

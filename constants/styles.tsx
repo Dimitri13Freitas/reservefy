@@ -5,6 +5,9 @@ const styles = StyleSheet.create({
   textLightColor: {
     color: Colors.secundary.light,
   },
+  textDarkColor: {
+    color: Colors.secundary.main,
+  },
   screenContainer: {
     flex: 1,
     backgroundColor: Colors.primary.light,
