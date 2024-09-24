@@ -1,7 +1,8 @@
-import { Text, View, ImageBackground } from "react-native";
+import { Text, View, ImageBackground, Pressable } from "react-native";
 import styles from "../constants/styles";
 import LottieView from "lottie-react-native";
 import { Input } from "@/components/Input";
+import { Button } from "@/components/Button";
 
 export default function Index() {
   return (
@@ -22,6 +23,12 @@ export default function Index() {
         </Text>
         <Input type="email" label="Email:" placeholder="Digite seu email" />
         <Input type="password" label="Senha:" placeholder="•••••••••" />
+        <Pressable>
+          <Text style={[styles.simpleLink, { textAlign: "right" }]}>
+            Esqueceu a senha?
+          </Text>
+        </Pressable>
+        <Button text="Entrar" />
       </View>
       <LottieView
         style={{
@@ -36,12 +43,13 @@ export default function Index() {
         loop={false}
         autoPlay
       />
+      <ImageBackground source={require("../assets/circulo5.json")} />
       <LottieView
         style={{
           width: 530,
           height: 530,
           position: "absolute",
-          bottom: -230,
+          bottom: -250,
           left: -290,
           zIndex: -2,
         }}
