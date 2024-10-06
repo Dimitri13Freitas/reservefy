@@ -11,7 +11,7 @@ interface InputProps {
 
 export function Input({ placeholder, type, label }: InputProps) {
   const [focus, setFocus] = React.useState(false);
-  const [showPass, setShowPass] = React.useState(false);
+  const [showPass, setShowPass] = React.useState(true);
 
   if (type === "password") {
     return (
@@ -35,7 +35,7 @@ export function Input({ placeholder, type, label }: InputProps) {
             onFocus={() => setFocus(true)}
             onBlur={() => setFocus(false)}
             style={{ padding: 12, flex: 1 }}
-            {...(type === "password" ? { secureTextEntry: showPass } : null)}
+            secureTextEntry={showPass}
           />
           <TouchableOpacity
             onPress={() => setShowPass(!showPass)}
