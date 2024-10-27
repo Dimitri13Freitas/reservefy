@@ -31,6 +31,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8f4b2466-c8d6-42dd-91e3-7efba7446ff5"
+      }
+    },
+    "owner": "dimitri13freitas"
   }
 }

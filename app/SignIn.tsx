@@ -6,6 +6,12 @@ import { Button } from "@/components/Button";
 import { router } from "expo-router";
 
 export default function SignIn() {
+  function handleLogin() {
+    // Lógica para logar
+    router.push("/Home");
+    console.log("Entrou");
+  }
+
   return (
     <View style={[styles.screenContainer, { width: "100%" }]}>
       <View style={{ width: "100%" }}>
@@ -35,7 +41,7 @@ export default function SignIn() {
             Esqueceu a senha?
           </Text>
         </Pressable>
-        <Button text="Entrar" />
+        <Button text="Entrar" onPress={handleLogin} />
         <View
           style={{
             display: "flex",

@@ -2,6 +2,7 @@ import React from "react";
 import { Text, View, TextInput, TouchableOpacity } from "react-native";
 import styles from "../constants/styles";
 import { Entypo } from "@expo/vector-icons";
+import Colors from "@/constants/Colors";
 
 interface InputProps {
   placeholder: string;
@@ -46,7 +47,7 @@ export function Input({ placeholder, type, label }: InputProps) {
             <Entypo
               name={showPass ? "eye" : "eye-with-line"}
               size={26}
-              color="black"
+              color={Colors.secundary.main}
             />
           </TouchableOpacity>
         </View>

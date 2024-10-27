@@ -4,14 +4,13 @@ import styles from "../constants/styles";
 
 interface ButtonProps {
   text: string;
+  [key: string]: any;
 }
 
-export function Button({ text }: ButtonProps) {
-  let [focus, setFocus] = React.useState(false);
-
+export function Button({ text, ...props }: ButtonProps) {
   return (
     <View>
-      <Pressable style={styles.button}>
+      <Pressable {...props} style={styles.button}>
         <Text style={styles.buttonText}>{text}</Text>
       </Pressable>
     </View>
