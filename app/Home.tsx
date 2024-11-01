@@ -4,18 +4,14 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constants/Colors";
 import React from "react";
+BottomSheet;
 import Calendar from "@/components/Calendar";
+import SwapWindow from "@/components/SwapWindow";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
 // import { StatusBar } from "expo-status-bar";
 
 export default function Home() {
-  const bottomSheetRef = React.useRef<BottomSheet>(null);
-
-  const handleSheetChanges = React.useCallback((index: number) => {
-    console.log("handleSheetChanges", index);
-  }, []);
-
   const [hasNotification, setHasNotification] = React.useState(true);
   const reservations = [
     {
@@ -36,23 +32,7 @@ export default function Home() {
   return (
     <GestureHandlerRootView style={styles.screenContainer}>
       {/* <StatusBar style="auto" /> */}
-      <BottomSheet
-        index={0}
-        snapPoints={["30%", "70%"]}
-        ref={bottomSheetRef}
-        onChange={handleSheetChanges}
-        // style={{ position: "relative", zIndex: 99999999999999 }}
-      >
-        <BottomSheetView
-          style={{
-            flex: 1,
-            padding: 36,
-            alignItems: "center",
-          }}
-        >
-          <Text>Awesome</Text>
-        </BottomSheetView>
-      </BottomSheet>
+      <SwapWindow />
       <View
         style={{
           marginTop: 20,
