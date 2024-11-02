@@ -22,18 +22,18 @@ export default function SwapWindow({ ...props }) {
           paddingVertical: 6,
         }}
       >
-        <Text style={styles.sheetTile}>Reservas:</Text>
+        <Text style={styles.sheetTitle}>Reservas:</Text>
         <View style={styles.reserveElement}>
-          <View>
-            <Text style={styles.dayTitle}>13</Text>
-            <Text style={styles.sheetTile}>Sex.</Text>
+          <View style={styles.dayContainer}>
+            <Text style={[styles.dayTitle]}>13</Text>
+            <Text style={styles.sheetTitle}>Sex.</Text>
           </View>
-          <View>
-            <Text>Sala de Treinamento</Text>
-            <View>
-              <Text>09:00</Text>
-              <Text>------</Text>
-              <Text>10:00</Text>
+          <View style={styles.reserveInfo}>
+            <Text style={styles.reserveRoom}>Sala de Treinamento</Text>
+            <View style={styles.reserveTime}>
+              <Text style={styles.time}>09:00</Text>
+              <Text style={{ color: Colors.primary.main }}>------</Text>
+              <Text style={styles.time}>10:00</Text>
             </View>
           </View>
         </View>
@@ -43,7 +43,7 @@ export default function SwapWindow({ ...props }) {
 }
 
 const styles = StyleSheet.create({
-  sheetTile: {
+  sheetTitle: {
     fontSize: 24,
     fontWeight: "bold",
   },
@@ -51,7 +51,35 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: "bold",
   },
+  time: {
+    fontSize: 14,
+  },
+  reserveTime: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 6,
+    gap: 5,
+  },
+  reserveRoom: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  reserveInfo: {
+    paddingLeft: 15,
+  },
+  dayContainer: {
+    paddingRight: 15,
+    borderRightWidth: 2,
+    borderColor: Colors.secundary.main,
+  },
   reserveElement: {
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
     backgroundColor: Colors.primary.light,
   },
 });
