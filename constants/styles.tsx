@@ -45,6 +45,13 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: Colors.primary.main,
   },
+  inputError: {
+    borderColor: Colors.red,
+  },
+  textError: {
+    color: Colors.red,
+    textAlign: "right",
+  },
   labelInput: {
     marginTop: 16,
     fontSize: 16,

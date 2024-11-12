@@ -1,16 +1,23 @@
 import React from "react";
-import { Text, View, TextInput, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  TextInputProps,
+} from "react-native";
 import styles from "../constants/styles";
 import { Entypo } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 
-interface InputProps {
+interface InputProps extends TextInputProps {
   placeholder: string;
   type?: "password" | "text" | "email";
   label: string;
+  err: boolean;
 }
 
-export function Input({ placeholder, type, label }: InputProps) {
+export function Input({ placeholder, type, label, err, ...props }: InputProps) {
   const [focus, setFocus] = React.useState(false);
   const [showPass, setShowPass] = React.useState(true);
 
@@ -22,6 +29,7 @@ export function Input({ placeholder, type, label }: InputProps) {
           style={[
             styles.input,
             focus ? styles.inputFocus : null,
+            err ? styles.inputError : null,
             {
               display: "flex",
               flexDirection: "row",
@@ -32,6 +40,7 @@ export function Input({ placeholder, type, label }: InputProps) {
           ]}
         >
           <TextInput
+            {...props}
             placeholder={placeholder}
             onFocus={() => setFocus(true)}
             onBlur={() => setFocus(false)}
@@ -58,11 +67,16 @@ export function Input({ placeholder, type, label }: InputProps) {
       <View>
         <Text style={[styles.labelInput]}>{label}</Text>
         <TextInput
+          {...props}
           placeholder={placeholder}
           onFocus={() => setFocus(true)}
           onBlur={() => setFocus(false)}
           {...(type === "email" ? { keyboardType: "email-address" } : null)}
-          style={[styles.input, focus ? styles.inputFocus : null]}
+          style={[
+            styles.input,
+            focus ? styles.inputFocus : null,
+            err ? styles.inputError : null,
+          ]}
         />
       </View>
     );
