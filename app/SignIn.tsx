@@ -1,15 +1,56 @@
-import { Text, View, ImageBackground, Pressable } from "react-native";
+import React from "react";
+import { Text, View, Alert, Pressable } from "react-native";
 import styles from "../constants/styles";
 import LottieView from "lottie-react-native";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
+import { logIn } from "../firebaseConfig";
 import { router } from "expo-router";
 
 export default function SignIn() {
-  function handleLogin() {
-    // Lógica para logar
-    router.push("/Home");
-    console.log("Entrou");
+  const [email, setEmail] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
+
+  const [emailError, setEmailError] = React.useState<string>("");
+  const [passwordError, setPasswordError] = React.useState<string>("");
+
+  function validateForm() {
+    let isValid = true;
+
+    if (!email) {
+      setEmailError("O email é obrigatório.");
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError("O email está inválido.");
+      isValid = false;
+    } else {
+      setEmailError("");
+    }
+
+    if (!password) {
+      setPasswordError("A senha é obrigatória.");
+      isValid = false;
+    } else if (password.length < 8) {
+      setPasswordError("A senha deve ter pelo menos 8 caracteres.");
+      isValid = false;
+    } else {
+      setPasswordError("");
+    }
+
+    return isValid;
+  }
+
+  async function handleLogin() {
+    if (validateForm()) {
+      const returnUser = await logIn(email, password);
+      if (returnUser.code) {
+        Alert.alert("Seu email ou senha estão incorretos.", "", [
+          { text: "OK" },
+        ]);
+      } else {
+        router.push("/Home");
+      }
+    }
   }
 
   return (
@@ -17,20 +58,38 @@ export default function SignIn() {
       <View style={{ width: "100%" }}>
         <LottieView
           style={{
-            marginTop: 120,
+            marginTop: 100,
             width: 230,
             height: 88,
           }}
           source={require("../assets/staticLogo.json")}
           loop={false}
-          autoPlay
         />
         <Text style={[styles.textLightColor, { fontSize: 20 }]}>
           Bem-vindo de volta.
         </Text>
-        <Input type="email" label="Email:" placeholder="Digite seu email" />
-        <Input type="password" label="Senha:" placeholder="•••••••••" />
-        <Pressable>
+        <Input
+          value={email}
+          onChangeText={(e) => setEmail(e)}
+          err={emailError ? true : false}
+          type="email"
+          label="Email:"
+          placeholder="Digite seu email"
+        />
+        <Text style={styles.textError}>{emailError ? emailError : null}</Text>
+        <Input
+          value={password}
+          onChangeText={(e) => setPassword(e)}
+          err={passwordError ? true : false}
+          type="password"
+          label="Senha:"
+          placeholder="•••••••••"
+        />
+        <Text style={styles.textError}>
+          {passwordError ? passwordError : null}
+        </Text>
+
+        <Pressable onPress={() => router.push("/ResetPassword")}>
           <Text
             style={[
               styles.simpleLink,

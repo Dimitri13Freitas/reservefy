@@ -113,6 +113,10 @@ const Calendar: React.FC<CalendarProps> = ({
 
   const weeks = generateCalendar();
 
+  function handlePress(date: Date) {
+    console.log(date);
+  }
+
   return (
     <View style={{ position: "relative", zIndex: -99 }}>
       {/* Cabeçalho do Calendário */}
@@ -158,6 +162,7 @@ const Calendar: React.FC<CalendarProps> = ({
                       hasReservation(date) && styles.reservedDate,
                       isSameDay(date, today) && styles.todayDate, // Aplica estilo adicional se for o dia atual
                     ]}
+                    onPress={() => handlePress(date)}
                   >
                     <Text
                       style={[

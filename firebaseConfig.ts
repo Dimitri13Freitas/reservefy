@@ -1,14 +1,13 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import {
   getReactNativePersistence,
+  sendPasswordResetEmail,
   UserCredential,
   createUserWithEmailAndPassword,
   getAuth,
   initializeAuth,
   updateProfile,
-  User,
-  setPersistence,
-  browserLocalPersistence,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -106,4 +105,27 @@ async function createGroup(groupName: string): Promise<void> {
   }
 }
 
-export { createUser, createGroup };
+async function logIn(email: string, password: string) {
+  try {
+    const userCredential: UserCredential = await signInWithEmailAndPassword(
+      auth!,
+      email,
+      password,
+    );
+    return true;
+  } catch (error: any) {
+    return error;
+  }
+}
+
+async function resetPassword(email: string) {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    return true;
+  } catch (error) {
+    console.error("Erro ao enviar e-mail de redefinição de senha: ", error);
+    return false;
+  }
+}
+
+export { auth, createUser, createGroup, logIn, resetPassword };

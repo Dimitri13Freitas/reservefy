@@ -1,17 +1,50 @@
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text, View, Alert, BackHandler } from "react-native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import styles from "../constants/styles";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constants/Colors";
 import React from "react";
-BottomSheet;
+import { auth } from "@/firebaseConfig";
 import Calendar from "@/components/Calendar";
 import SwapWindow from "@/components/SwapWindow";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
-// import { StatusBar } from "expo-status-bar";
+import { router } from "expo-router";
 
 export default function Home() {
+  const navigation = useNavigation();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        Alert.alert(
+          "Deseja sair?",
+          "Você quer sair do aplicativo ou apenas deslogar?",
+          [
+            { text: "Sair do App", onPress: () => BackHandler.exitApp() },
+            {
+              text: "Sair da Conta",
+              onPress: async () => {
+                await auth.signOut();
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: "SignIn" }], // Redireciona para a tela de login
+                });
+              },
+            },
+            { text: "Cancelar", style: "cancel" },
+          ],
+        );
+        return true;
+      };
+
+      BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+      return () =>
+        BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+    }, [navigation]),
+  );
+
   const [hasNotification, setHasNotification] = React.useState(true);
   const reservations = [
     {
