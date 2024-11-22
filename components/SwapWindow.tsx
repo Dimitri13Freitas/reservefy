@@ -11,7 +11,7 @@ export default function SwapWindow({ ...props }) {
   return (
     <BottomSheet
       index={0}
-      snapPoints={["30%", "70%"]}
+      snapPoints={["34%", "72%"]}
       ref={bottomSheetRef}
       onChange={handleSheetChanges}
     >

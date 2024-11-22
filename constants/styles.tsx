@@ -72,6 +72,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.secundary.main,
   },
+  picker: {
+    backgroundColor: Colors.white.main,
+    borderRadius: 8,
+  },
 });
 
 export default styles;

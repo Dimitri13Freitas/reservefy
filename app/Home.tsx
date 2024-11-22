@@ -28,7 +28,7 @@ export default function Home() {
                 await auth.signOut();
                 navigation.reset({
                   index: 0,
-                  routes: [{ name: "SignIn" }], // Redireciona para a tela de login
+                  routes: [{ name: "SignIn" }],
                 });
               },
             },
@@ -64,7 +64,7 @@ export default function Home() {
   ];
 
   function handleMenuPress() {
-    router.push("./Menu"); // navigation.openDrawer();
+    router.push("./Menu");
   }
 
   return (

@@ -17,9 +17,10 @@ import {
   setDoc,
   getDoc,
   updateDoc,
+  addDoc,
+  collection,
 } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { addDoc, collection } from "firebase/firestore";
 
 // Configurações do Firebase
 const firebaseConfig = {
@@ -42,7 +43,6 @@ const auth = initializeAuth(app, {
 // Inicialize o Firestore
 const db = getFirestore(app);
 
-// Função para criar o usuário
 async function createUser(
   email: string,
   password: string,
@@ -174,6 +174,32 @@ async function updateProvPassword(
   }
 }
 
+async function createSala(
+  nomeDaSala: string,
+  horarioInicio: string,
+  horarioFinal: string,
+) {
+  const groupId = await AsyncStorage.getItem("groupId");
+  if (!groupId) {
+    throw new Error("Group ID não encontrado");
+  }
+
+  try {
+    const salaRef = await addDoc(collection(db, `grupo/${groupId}/espacos`), {
+      nome: nomeDaSala,
+      horaDisp: {
+        horarioInicio,
+        horarioFinal,
+      },
+    });
+    console.log("Sala criada com sucesso:", salaRef.id);
+    return true;
+  } catch (error) {
+    console.error("Erro ao criar a sala:", error);
+    return false;
+  }
+}
+
 export {
   auth,
   User,
@@ -183,4 +209,5 @@ export {
   logIn,
   resetPassword,
   updateProvPassword,
+  createSala,
 };

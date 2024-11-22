@@ -1,15 +1,13 @@
 import React from "react";
-import { View, Text, Pressable, Alert, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, Alert } from "react-native";
 import styles from "../constants/styles";
 import { router } from "expo-router";
 import { createUser } from "../firebaseConfig";
 import { Input } from "@/components/Input";
 import Checkbox from "expo-checkbox";
 import { Button } from "@/components/Button";
-import { resetPassword } from "../firebaseConfig";
 import Colors from "@/constants/Colors";
 import { Load } from "@/components/Load";
-import { loadOptions } from "@babel/core";
 
 export default function AddMember() {
   const [name, setName] = React.useState<string>("");

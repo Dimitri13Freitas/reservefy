@@ -22,6 +22,7 @@ export default function RootLayout() {
       <Stack.Screen options={{ headerShown: false }} name="Home" />
       <Stack.Screen name="Menu" />
       <Stack.Screen name="AddMember" />
+      <Stack.Screen name="AddSala" />
     </Stack>
   );
 }

@@ -12,7 +12,7 @@ import { Load } from "@/components/Load";
 
 export default function SignIn() {
   const [email, setEmail] = React.useState<string>("demetrio@gmail.com");
-  const [password, setPassword] = React.useState<string>("987654321");
+  const [password, setPassword] = React.useState<string>("123456789");
 
   const [emailError, setEmailError] = React.useState<string>("");
   const [passwordError, setPasswordError] = React.useState<string>("");
@@ -71,11 +71,6 @@ export default function SignIn() {
       console.log(err);
     }
   }
-
-  const ContentScreen = () => {
-    // return (
-    // );
-  };
 
   return (
     <View

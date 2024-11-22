@@ -45,24 +45,25 @@ export default function Menu() {
               </Text>
             </View>
           </TouchableOpacity>
-          <Pressable style={styles.menuOptionComponent}>
+          <TouchableOpacity style={styles.menuOptionComponent}>
             <Text style={styles.menuOptionTitle}>Gerenciar Membros</Text>
             <Text style={styles.menuOptionDesc}>
               Gerencie os membros do grupo para organizar reservas.
             </Text>
-          </Pressable>
-          <Pressable style={styles.menuOptionComponent}>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push("/AddSala")}
+            style={styles.menuOptionComponent}
+          >
             <Text style={styles.menuOptionTitle}>Criar Sala</Text>
             <Text style={styles.menuOptionDesc}>
               Registre um novo espaço no seu grupo
             </Text>
-          </Pressable>
-          {/* <Pressable style={styles.menuOptionComponent}>
+          </TouchableOpacity>
+          <Pressable style={styles.menuOptionComponent}>
             <Text style={styles.menuOptionTitle}>Excluir Grupo</Text>
-            <Text style={styles.menuOptionDesc}>
-              
-            </Text>
-          </Pressable> */}
+            <Text style={styles.menuOptionDesc}></Text>
+          </Pressable>
         </View>
       </View>
     </View>

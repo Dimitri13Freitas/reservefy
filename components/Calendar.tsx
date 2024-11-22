@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Ícones do expo/vector-icons
 import Colors from "@/constants/Colors";
+import { router } from "expo-router";
 
 interface Reservation {
   id: number;
@@ -115,6 +116,7 @@ const Calendar: React.FC<CalendarProps> = ({
 
   function handlePress(date: Date) {
     console.log(date);
+    router.push("/AddSala");
   }
 
   return (

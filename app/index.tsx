@@ -1,9 +1,8 @@
 import React from "react";
 import SignIn from "./SignIn";
-import { ActivityIndicator, SafeAreaView, View } from "react-native";
+import { SafeAreaView, View } from "react-native";
 import { auth } from "@/firebaseConfig";
 import { User } from "firebase/auth";
-import Colors from "@/constants/Colors";
 import Home from "./Home";
 import { Load } from "@/components/Load";
 
