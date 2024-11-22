@@ -34,9 +34,6 @@ export default function ResetPassword() {
       if (returnResetPass) {
         setSendedResetPass(true);
       }
-      // if (returnVerify) {
-      //   console.log("envio o email de recuperação");
-      // }
     } else {
       console.log("não é valido");
     }
@@ -48,9 +45,10 @@ export default function ResetPassword() {
         {sendedResetPass ? (
           <View>
             <Text>
-              Se o seu email estiver cadastrado, você receberá um email. Pode
+              Se o preenchido estiver cadastrado, você receberá um email. Pode
               demorar até 10 minutos. Caso não receba, entre em contato.
             </Text>
+            <Button text="Voltar ao inicio" onPress={() => router.push("/")} />
           </View>
         ) : (
           <View>

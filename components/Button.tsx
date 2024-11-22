@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, View, Pressable } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 import styles from "../constants/styles";
 
 interface ButtonProps {
@@ -10,9 +10,9 @@ interface ButtonProps {
 export function Button({ text, ...props }: ButtonProps) {
   return (
     <View>
-      <Pressable {...props} style={styles.button}>
+      <TouchableOpacity {...props} style={styles.button}>
         <Text style={styles.buttonText}>{text}</Text>
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 }

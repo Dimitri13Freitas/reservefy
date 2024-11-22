@@ -1,18 +1,23 @@
 import React from "react";
-import { Text, View, Alert, Pressable } from "react-native";
+import { Text, View, Alert, Pressable, ActivityIndicator } from "react-native";
 import styles from "../constants/styles";
 import LottieView from "lottie-react-native";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
-import { logIn } from "../firebaseConfig";
+import { logIn, selectPerfil } from "../firebaseConfig";
 import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Colors from "@/constants/Colors";
+import { Load } from "@/components/Load";
 
 export default function SignIn() {
-  const [email, setEmail] = React.useState<string>("");
-  const [password, setPassword] = React.useState<string>("");
+  const [email, setEmail] = React.useState<string>("demetrio@gmail.com");
+  const [password, setPassword] = React.useState<string>("987654321");
 
   const [emailError, setEmailError] = React.useState<string>("");
   const [passwordError, setPasswordError] = React.useState<string>("");
+
+  const [load, setLoad] = React.useState<boolean>(false);
 
   function validateForm() {
     let isValid = true;
@@ -39,92 +44,121 @@ export default function SignIn() {
 
     return isValid;
   }
-
   async function handleLogin() {
-    if (validateForm()) {
-      const returnUser = await logIn(email, password);
-      if (returnUser.code) {
-        Alert.alert("Seu email ou senha estão incorretos.", "", [
-          { text: "OK" },
-        ]);
-      } else {
-        router.push("/Home");
+    setLoad(true);
+    try {
+      if (validateForm()) {
+        const returnUser = await logIn(email, password);
+        if (returnUser.code) {
+          Alert.alert("Seu email ou senha estão incorretos.", "", [
+            { text: "OK" },
+          ]);
+        } else {
+          const groupId: string | null = await AsyncStorage.getItem("groupId");
+          console.log(groupId);
+          if (groupId) {
+            const teste = await selectPerfil(groupId, returnUser.uid);
+            if (teste.provPassword) {
+              router.push("/setPassword");
+            } else {
+              router.push("/Home");
+            }
+          }
+        }
       }
+      setLoad(false);
+    } catch (err) {
+      console.log(err);
     }
   }
 
-  return (
-    <View style={[styles.screenContainer, { width: "100%" }]}>
-      <View style={{ width: "100%" }}>
-        <LottieView
-          style={{
-            marginTop: 100,
-            width: 230,
-            height: 88,
-          }}
-          source={require("../assets/staticLogo.json")}
-          loop={false}
-        />
-        <Text style={[styles.textLightColor, { fontSize: 20 }]}>
-          Bem-vindo de volta.
-        </Text>
-        <Input
-          value={email}
-          onChangeText={(e) => setEmail(e)}
-          err={emailError ? true : false}
-          type="email"
-          label="Email:"
-          placeholder="Digite seu email"
-        />
-        <Text style={styles.textError}>{emailError ? emailError : null}</Text>
-        <Input
-          value={password}
-          onChangeText={(e) => setPassword(e)}
-          err={passwordError ? true : false}
-          type="password"
-          label="Senha:"
-          placeholder="•••••••••"
-        />
-        <Text style={styles.textError}>
-          {passwordError ? passwordError : null}
-        </Text>
+  const ContentScreen = () => {
+    // return (
+    // );
+  };
 
-        <Pressable onPress={() => router.push("/ResetPassword")}>
-          <Text
-            style={[
-              styles.simpleLink,
-              { textAlign: "right" },
-              styles.textLightColor,
-            ]}
-          >
-            Esqueceu a senha?
+  return (
+    <View
+      style={[
+        styles.screenContainer,
+        { width: "100%" },
+        load ? { alignItems: "center", justifyContent: "center" } : null,
+      ]}
+    >
+      {load ? (
+        <Load />
+      ) : (
+        <View style={{ width: "100%" }}>
+          <LottieView
+            style={{
+              marginTop: 100,
+              width: 230,
+              height: 88,
+            }}
+            source={require("../assets/staticLogo.json")}
+            loop={false}
+          />
+          <Text style={[styles.textLightColor, { fontSize: 20 }]}>
+            Bem-vindo de volta.
           </Text>
-        </Pressable>
-        <Button text="Entrar" onPress={handleLogin} />
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
-          <Text
-            style={[
-              { textAlign: "center", fontSize: 16, marginTop: 16 },
-              styles.textDarkColor,
-            ]}
-          >
-            Ainda não possui conta?
+          <Input
+            value={email}
+            onChangeText={(e) => setEmail(e)}
+            err={emailError ? true : false}
+            type="email"
+            label="Email:"
+            placeholder="Digite seu email"
+          />
+          <Text style={styles.textError}>{emailError ? emailError : null}</Text>
+          <Input
+            value={password}
+            onChangeText={(e) => setPassword(e)}
+            err={passwordError ? true : false}
+            type="password"
+            label="Senha:"
+            placeholder="•••••••••"
+          />
+          <Text style={styles.textError}>
+            {passwordError ? passwordError : null}
           </Text>
-          <Pressable onPress={() => router.push("/SignUp")}>
-            <Text style={[styles.simpleLink, styles.textLightColor]}>
-              Cadastre-se aqui
+
+          <Pressable onPress={() => router.push("/ResetPassword")}>
+            <Text
+              style={[
+                styles.simpleLink,
+                { textAlign: "right" },
+                styles.textLightColor,
+              ]}
+            >
+              Esqueceu a senha?
             </Text>
           </Pressable>
+          <Button text="Entrar" onPress={handleLogin} />
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 8,
+            }}
+          >
+            <Text
+              style={[
+                { textAlign: "center", fontSize: 16, marginTop: 16 },
+                styles.textDarkColor,
+              ]}
+            >
+              Ainda não possui conta?
+            </Text>
+            <Pressable onPress={() => router.push("/SignUp")}>
+              <Text style={[styles.simpleLink, styles.textLightColor]}>
+                Cadastre-se aqui
+              </Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
+      )}
       <LottieView
         style={{
           width: 530,

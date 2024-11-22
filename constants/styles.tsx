@@ -8,12 +8,27 @@ const styles = StyleSheet.create({
   textDarkColor: {
     color: Colors.secundary.main,
   },
+  menuOptionComponent: {
+    minWidth: "100%",
+    padding: 12,
+    backgroundColor: Colors.primary.light,
+    borderRadius: 15,
+  },
+  menuOptionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  menuOptionDesc: {
+    fontSize: 14,
+    color: Colors.secundary.light,
+  },
   screenContainer: {
     flex: 1,
     backgroundColor: Colors.primary.light,
     paddingHorizontal: 20,
     paddingTop: 40,
   },
+
   simpleLink: {
     marginTop: 16,
     color: Colors.secundary.light,

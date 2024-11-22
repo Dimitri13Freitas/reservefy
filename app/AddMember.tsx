@@ -1,20 +1,22 @@
 import React from "react";
 import { View, Text, Pressable, Alert, ActivityIndicator } from "react-native";
 import styles from "../constants/styles";
-import LottieView from "lottie-react-native";
-import { Input } from "@/components/Input";
-import { Button } from "@/components/Button";
-import { createUser } from "../firebaseConfig";
 import { router } from "expo-router";
+import { createUser } from "../firebaseConfig";
+import { Input } from "@/components/Input";
+import Checkbox from "expo-checkbox";
+import { Button } from "@/components/Button";
+import { resetPassword } from "../firebaseConfig";
 import Colors from "@/constants/Colors";
 import { Load } from "@/components/Load";
+import { loadOptions } from "@babel/core";
 
-export default function SignUp() {
+export default function AddMember() {
   const [name, setName] = React.useState<string>("");
   const [email, setEmail] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
-  const [confirmedPassword, setConfirmedPassword] = React.useState<string>("");
   const [load, setLoad] = React.useState<boolean>(false);
+  const [isChecked, setChecked] = React.useState(false);
 
   const [nameError, setNameError] = React.useState<string>("");
   const [emailError, setEmailError] = React.useState<string>("");
@@ -43,9 +45,6 @@ export default function SignUp() {
     if (!password) {
       setPasswordError("A senha é obrigatória.");
       isValid = false;
-    } else if (password !== confirmedPassword) {
-      setPasswordError("As senhas não conferem.");
-      isValid = false;
     } else if (password.length < 8) {
       setPasswordError("A senha deve ter pelo menos 8 caracteres.");
       isValid = false;
@@ -63,19 +62,18 @@ export default function SignUp() {
         email,
         password,
         name,
-        ["admin"],
-        false,
+        ["common"],
+        isChecked,
       );
       if (returnUser.displayName) {
         Alert.alert(
-          `"Parabéns ${returnUser.displayName}, sua conta foi criada com sucesso!!"`,
-          "",
-          [{ text: "Continuar", onPress: () => router.push("/SignIn") }],
+          "Membro Adicionado com sucesso!!",
+          "Deseja adicionar mais?",
+          [{ text: "Não", onPress: () => router.push("..") }, { text: "Sim" }],
         );
         setName("");
         setEmail("");
         setPassword("");
-        setConfirmedPassword("");
       } else {
         console.log(returnUser.code);
         if (returnUser.code.includes("email-already-in-use")) {
@@ -90,13 +88,20 @@ export default function SignUp() {
   }
 
   return (
-    <View style={[styles.screenContainer, { width: "100%" }]}>
+    <View
+      style={[
+        styles.screenContainer,
+        { width: "100%" },
+        load
+          ? {
+              alignItems: "center",
+              justifyContent: "center",
+            }
+          : null,
+      ]}
+    >
       {load ? (
-        <View
-          style={{ flex: 1, alignItems: "center", justifyContent: "center" }}
-        >
-          <Load />
-        </View>
+        <Load />
       ) : (
         <View style={{ marginTop: 60, position: "relative" }}>
           <Input
@@ -117,6 +122,7 @@ export default function SignUp() {
             placeholder="Digite seu email"
           />
           <Text style={styles.textError}>{emailError ? emailError : null}</Text>
+
           <Input
             err={passwordError ? true : false}
             value={password}
@@ -128,65 +134,29 @@ export default function SignUp() {
           <Text style={styles.textError}>
             {passwordError ? passwordError : null}
           </Text>
-
-          <Input
-            err={passwordError ? true : false}
-            value={confirmedPassword}
-            onChangeText={(e) => setConfirmedPassword(e)}
-            type="password"
-            label="Confirme a senha:"
-            placeholder="Digite sua senha novamente"
-          />
-          <Button onPress={handlePress} text="Cadastrar" />
           <View
             style={{
               display: "flex",
               flexDirection: "row",
-              justifyContent: "center",
               alignItems: "center",
-              gap: 8,
+              gap: 10,
+              marginTop: 10,
             }}
           >
+            <Checkbox
+              color={Colors.primary.main}
+              value={isChecked}
+              onValueChange={setChecked}
+            />
             <Text
-              style={[
-                { textAlign: "center", fontSize: 16, marginTop: 16 },
-                styles.textDarkColor,
-              ]}
+              style={{ maxWidth: 250 }}
+              onPress={() => setChecked(!isChecked)}
             >
-              Já possui uma conta?
+              Exigir que este usuário altere a senha quando entrar pela primeira
+              vez?
             </Text>
-            <Pressable onPress={() => router.push("/")}>
-              <Text style={[styles.simpleLink, styles.textLightColor]}>
-                Entrar
-              </Text>
-            </Pressable>
           </View>
-          <LottieView
-            style={{
-              width: 530,
-              height: 530,
-              position: "absolute",
-              top: -470,
-              right: -300,
-              zIndex: -2,
-            }}
-            source={require("../assets/circulo5.json")}
-            loop={false}
-            autoPlay
-          />
-          <LottieView
-            style={{
-              width: 530,
-              height: 530,
-              position: "absolute",
-              bottom: -550,
-              left: -290,
-              zIndex: -2,
-            }}
-            source={require("../assets/circulo3.json")}
-            loop={false}
-            autoPlay
-          />
+          <Button onPress={handlePress} text="Adicionar Membro" />
         </View>
       )}
     </View>

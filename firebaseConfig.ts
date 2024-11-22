@@ -5,11 +5,19 @@ import {
   UserCredential,
   createUserWithEmailAndPassword,
   getAuth,
+  updatePassword,
   initializeAuth,
   updateProfile,
+  User,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { getFirestore, doc, setDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc,
+} from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addDoc, collection } from "firebase/firestore";
 
@@ -40,6 +48,7 @@ async function createUser(
   password: string,
   name: string,
   label: string[],
+  provPassword: boolean,
 ): Promise<any> {
   try {
     const userCredential: UserCredential = await createUserWithEmailAndPassword(
@@ -53,7 +62,6 @@ async function createUser(
       displayName: name,
     });
 
-    // Configura a função de administrador e armazenamento local se necessário
     if (label.includes("admin")) {
       await createGroup(name);
       await AsyncStorage.setItem("userRole", "admin");
@@ -69,6 +77,7 @@ async function createUser(
       role: label,
       userName: user.displayName,
       userId: user.uid,
+      provPassword,
     });
 
     // Se for admin, efetua logout
@@ -77,12 +86,10 @@ async function createUser(
     }
     return user;
   } catch (error) {
-    // console.log("Erro ao efetuar cadastro de usuário: ", error);
     return error;
   }
 }
 
-// Função fictícia para criar grupo (adicione a lógica específica)
 async function createGroup(groupName: string): Promise<void> {
   const userId: string | undefined = auth!.currentUser?.uid;
   if (!userId) {
@@ -106,15 +113,33 @@ async function createGroup(groupName: string): Promise<void> {
 }
 
 async function logIn(email: string, password: string) {
+  const groupId = await AsyncStorage.getItem("groupId");
+  if (!groupId) {
+    throw new Error("Grupo ID não encontrado");
+  }
+
   try {
     const userCredential: UserCredential = await signInWithEmailAndPassword(
       auth!,
       email,
       password,
     );
-    return true;
+
+    return userCredential.user;
   } catch (error: any) {
     return error;
+  }
+}
+
+async function selectPerfil(groupId: string, userId: string) {
+  const userDocRef = doc(db, `grupo/${groupId}/users`, userId);
+  const userDoc = await getDoc(userDocRef);
+
+  // buscar no banco valor de "provPassword"
+  if (userDoc.exists()) {
+    return userDoc.data();
+  } else {
+    throw new Error("Usuário não encontrado.");
   }
 }
 
@@ -128,4 +153,34 @@ async function resetPassword(email: string) {
   }
 }
 
-export { auth, createUser, createGroup, logIn, resetPassword };
+async function updateProvPassword(
+  groupId: string | null,
+  user: User,
+  newPass: string,
+) {
+  try {
+    const userDocRef = doc(db, `grupo/${groupId}/users`, user.uid);
+
+    await updateDoc(userDocRef, {
+      provPassword: false,
+    });
+
+    await updatePassword(user, newPass);
+    console.log("Campo provPassword atualizado com sucesso!");
+    return true;
+  } catch (error) {
+    console.error("Erro ao atualizar o campo:", error);
+    return false;
+  }
+}
+
+export {
+  auth,
+  User,
+  createUser,
+  selectPerfil,
+  createGroup,
+  logIn,
+  resetPassword,
+  updateProvPassword,
+};
