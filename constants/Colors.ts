@@ -1,7 +1,8 @@
-import { opacity } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
-
 const Colors = {
   primary: { main: "#00C6CF", light: "#CCF4F5", dark: null },
+  opacityPrymary: (e: number) => {
+    return `rgba(0, 198, 207, ${e})`;
+  },
   secundary: { main: "#2c2c2c", light: "#737373", dark: null },
   white: {
     main: "#ffffff",

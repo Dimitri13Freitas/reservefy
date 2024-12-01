@@ -47,8 +47,8 @@ export default function AddSala() {
   }
 
   async function handlePress() {
-    setLoad(true);
     if (validateForm()) {
+      setLoad(true);
       const returnCreateSala = await createSala(
         nameRoom,
         firstSelectedHour,
@@ -79,7 +79,17 @@ export default function AddSala() {
   const hours = generateHours();
 
   return (
-    <View style={[styles.screenContainer]}>
+    <View
+      style={[
+        styles.screenContainer,
+        load
+          ? {
+              alignItems: "center",
+              justifyContent: "center",
+            }
+          : null,
+      ]}
+    >
       {load ? (
         <Load />
       ) : (

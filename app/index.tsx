@@ -1,10 +1,10 @@
 import React from "react";
 import SignIn from "./SignIn";
 import { SafeAreaView, View } from "react-native";
-import { auth } from "@/firebaseConfig";
-import { User } from "firebase/auth";
+import { auth, User } from "@/firebaseConfig";
 import Home from "./Home";
 import { Load } from "@/components/Load";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function Index() {
   const [init, setInit] = React.useState(true);
@@ -28,8 +28,10 @@ export default function Index() {
     );
   }
   return (
+    // <GestureHandlerRootView>
     <SafeAreaView style={{ flex: 1 }}>
       {user ? <Home /> : <SignIn />}
     </SafeAreaView>
+    // </GestureHandlerRootView>
   );
 }

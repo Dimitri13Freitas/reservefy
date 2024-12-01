@@ -23,6 +23,7 @@ export default function RootLayout() {
       <Stack.Screen name="Menu" />
       <Stack.Screen name="AddMember" />
       <Stack.Screen name="AddSala" />
+      <Stack.Screen name="ListaSalas" />
     </Stack>
   );
 }

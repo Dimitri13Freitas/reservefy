@@ -6,7 +6,6 @@ import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
 import { createUser } from "../firebaseConfig";
 import { router } from "expo-router";
-import Colors from "@/constants/Colors";
 import { Load } from "@/components/Load";
 
 export default function SignUp() {

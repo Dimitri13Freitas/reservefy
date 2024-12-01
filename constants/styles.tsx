@@ -2,6 +2,12 @@ import { StyleSheet, Platform } from "react-native";
 import Colors from "./Colors";
 
 const styles = StyleSheet.create({
+  salaContainer: {
+    padding: 20,
+    backgroundColor: Colors.opacityPrymary(0.2),
+    borderRadius: 8,
+    marginBottom: 10,
+  },
   textLightColor: {
     color: Colors.secundary.light,
   },

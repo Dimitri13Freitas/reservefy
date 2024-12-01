@@ -115,13 +115,16 @@ const Calendar: React.FC<CalendarProps> = ({
   const weeks = generateCalendar();
 
   function handlePress(date: Date) {
-    console.log(date);
-    router.push("/AddSala");
+    const dataString = date.toISOString();
+    console.log(date.toISOString());
+    router.push({
+      pathname: "/ListaSalas",
+      params: { selectDate: dataString },
+    });
   }
 
   return (
     <View style={{ position: "relative", zIndex: -99 }}>
-      {/* Cabeçalho do Calendário */}
       <View style={[styles.header]}>
         <Text style={styles.monthText}>{formatMonthYear(currentMonth)}</Text>
         <View style={{ flexDirection: "row", gap: 20, alignItems: "center" }}>

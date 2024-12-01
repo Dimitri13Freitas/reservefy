@@ -1,4 +1,11 @@
-import { Pressable, Text, View, Alert, BackHandler } from "react-native";
+import {
+  Pressable,
+  Text,
+  View,
+  Alert,
+  BackHandler,
+  StatusBar,
+} from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import styles from "../constants/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -7,9 +14,9 @@ import React from "react";
 import { auth } from "@/firebaseConfig";
 import Calendar from "@/components/Calendar";
 import SwapWindow from "@/components/SwapWindow";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { router } from "expo-router";
 import LottieView from "lottie-react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function Home() {
   const navigation = useNavigation();
@@ -70,10 +77,11 @@ export default function Home() {
   return (
     <>
       <GestureHandlerRootView style={styles.screenContainer}>
+        <StatusBar backgroundColor="transparent" translucent={true} />
         <SwapWindow />
         <View
           style={{
-            marginTop: 20,
+            marginTop: 10,
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",

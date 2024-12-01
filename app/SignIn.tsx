@@ -7,12 +7,11 @@ import { Button } from "@/components/Button";
 import { logIn, selectPerfil } from "../firebaseConfig";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Colors from "@/constants/Colors";
 import { Load } from "@/components/Load";
 
 export default function SignIn() {
-  const [email, setEmail] = React.useState<string>("demetrio@gmail.com");
-  const [password, setPassword] = React.useState<string>("123456789");
+  const [email, setEmail] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
 
   const [emailError, setEmailError] = React.useState<string>("");
   const [passwordError, setPasswordError] = React.useState<string>("");
@@ -76,14 +75,14 @@ export default function SignIn() {
     <View
       style={[
         styles.screenContainer,
-        { width: "100%" },
+        { width: "100%", position: "relative" },
         load ? { alignItems: "center", justifyContent: "center" } : null,
       ]}
     >
       {load ? (
         <Load />
       ) : (
-        <View style={{ width: "100%" }}>
+        <View style={{ width: "100%", zIndex: 9999999999 }}>
           <LottieView
             style={{
               marginTop: 100,
@@ -154,14 +153,15 @@ export default function SignIn() {
           </View>
         </View>
       )}
-      <LottieView
+      {/* <LottieView
         style={{
           width: 530,
           height: 530,
           position: "absolute",
-          top: -10,
-          right: -280,
-          zIndex: -2,
+          top: 0,
+          left: 0,
+          zIndex: -1,
+          backgroundColor: "red",
         }}
         source={require("../assets/circulo5.json")}
         loop={false}
@@ -172,14 +172,14 @@ export default function SignIn() {
           width: 530,
           height: 530,
           position: "absolute",
-          bottom: -250,
-          left: -290,
+          bottom: 0,
+          left: 0,
           zIndex: -2,
         }}
         source={require("../assets/circulo3.json")}
         loop={false}
         autoPlay
-      />
+      /> */}
     </View>
   );
 }

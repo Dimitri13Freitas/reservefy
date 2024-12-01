@@ -16,6 +16,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  getDocs,
   updateDoc,
   addDoc,
   collection,
@@ -200,6 +201,102 @@ async function createSala(
   }
 }
 
+async function listaSalas() {
+  try {
+    const groupId = await AsyncStorage.getItem("groupId");
+    if (!groupId) {
+      throw new Error("Group ID não encontrado");
+    }
+
+    // Referência à coleção "espacos" dentro do grupo
+    // const espacosRef = collection(db, grupo/${groupId}/espacos);
+    const espacosRef = collection(db, `grupo/${groupId}/espacos`);
+    const snapshot = await getDocs(espacosRef);
+
+    const salas = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return salas; // Retorna um array com as informações das salas
+  } catch (error) {
+    console.error("Erro ao listar salas do grupo:", error);
+    return [];
+  }
+}
+
+// async function selectSala(){
+//   const userDocRef = doc(db, `grupo/${groupId}/users`, userId);
+//   const userDoc = await getDoc(userDocRef);
+
+//   // buscar no banco valor de "provPassword"
+//   if (userDoc.exists()) {
+//     return userDoc.data();
+//   } else {
+//     throw new Error("Usuário não encontrado.");
+//   }
+// }
+
+async function criarReserva(
+  espacoId: string,
+  inicio: string,
+  fim: string,
+  nomeReuniao: string,
+) {
+  try {
+    // const disponivel = await verificarDisponibilidade(inicio, fim);
+
+    // if (!disponivel) {
+    //   Alert.alert("Esse horário já está ocupado.");
+    //   return;
+    // }
+
+    const groupId = await AsyncStorage.getItem("groupId");
+    if (!groupId) {
+      throw new Error("Group ID não encontrado");
+    }
+
+    const reservasRef = collection(
+      db,
+      `grupo/${groupId}/espacos/${espacoId}/reservas`,
+    );
+
+    await addDoc(reservasRef, {
+      // startTime: new Date(2024-11-21T${inicio}:00Z).toISOString(),
+      // endTime: new Date(2024-11-21T${fim}:00Z).toISOString(),
+      startTime: new Date(inicio).toISOString(),
+      endTime: new Date(fim).toISOString(),
+      nomeReuniao,
+      userId: auth.currentUser?.uid, // Exemplo de userId, deve vir do login do usuário
+    });
+    // Alert.alert("Reserva criada com sucesso!");
+    return true;
+  } catch (err) {
+    console.log("Firebase Error: ", err);
+    return false;
+  }
+}
+
+// async function verificarDisponibilidade(groupId: string, espacoId: string, inicio: string, fim: string) {
+//   const reservasRef = collection(
+//     db,
+//     `grupo/${groupId}/espacos/${espacoId}/reservas`,
+//   );
+
+//   // Convertendo os horários para o formato que Firebase pode comparar
+//   const startTime = new Date(`2024-11-21T${inicio}:00Z`).toISOString(); // Exemplo de horário 09:00
+//   const endTime = new Date(`2024-11-21T${fim}:00Z`).toISOString(); // Exemplo de horário 10:00
+
+//   const q = query(
+//     reservasRef,
+//     where("startTime", "<", endTime), // Reserva começa antes de terminar o novo intervalo
+//     where("endTime", ">", startTime), // Reserva termina depois de começar o novo intervalo
+//   );
+
+//   const snapshot = await getDocs(q);
+//   return snapshot.empty; // Se a query não encontrar documentos, significa que está disponível
+// }
+
 export {
   auth,
   User,
@@ -207,7 +304,9 @@ export {
   selectPerfil,
   createGroup,
   logIn,
+  listaSalas,
   resetPassword,
   updateProvPassword,
   createSala,
+  criarReserva,
 };

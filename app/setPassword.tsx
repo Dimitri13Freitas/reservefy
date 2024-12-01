@@ -59,13 +59,6 @@ export default function setPassword() {
       } else {
         console.log("erro Front");
       }
-      // const returnResetPass = await resetPassword(email);
-      // if (returnResetPass) {
-      //   setSendedResetPass(true);
-      // }
-      // if (returnVerify) {
-      //   console.log("envio o email de recuperação");
-      // }
     } else {
       console.log("não é valido");
     }
