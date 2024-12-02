@@ -11,15 +11,22 @@ import styles from "../constants/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colors from "@/constants/Colors";
 import React from "react";
-import { auth } from "@/firebaseConfig";
+import { auth, ListaReservas } from "@/firebaseConfig";
 import Calendar from "@/components/Calendar";
 import SwapWindow from "@/components/SwapWindow";
 import { router } from "expo-router";
 import LottieView from "lottie-react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Home() {
   const navigation = useNavigation();
+  const [reservations, setReservations] = React.useState<any>([]);
+  const [currentMonth, setCurrentMonth] = React.useState<Date>(new Date());
+
+  function handleMonthChange(month: Date) {
+    setCurrentMonth(month);
+  }
 
   useFocusEffect(
     React.useCallback(() => {
@@ -33,6 +40,7 @@ export default function Home() {
               text: "Sair da Conta",
               onPress: async () => {
                 await auth.signOut();
+                await AsyncStorage.setItem("groupId", "");
                 navigation.reset({
                   index: 0,
                   routes: [{ name: "SignIn" }],
@@ -52,23 +60,20 @@ export default function Home() {
     }, [navigation]),
   );
 
+  React.useEffect(() => {
+    handleReservas();
+  }, []);
+
+  async function handleReservas() {
+    const retornoReservas: any = await ListaReservas();
+    if (retornoReservas) {
+      setReservations(retornoReservas);
+    } else {
+      console.log("deu ruim o Retorno reservas Home", retornoReservas);
+    }
+  }
+
   const [hasNotification, setHasNotification] = React.useState(true);
-  const reservations = [
-    {
-      id: 1,
-      date: new Date(2024, 9, 13),
-      description: "Sala de Reunião",
-      startTime: "10:00",
-      endTime: "12:00",
-    },
-    {
-      id: 2,
-      date: new Date(2024, 9, 17),
-      description: "Treinamento",
-      startTime: "09:00",
-      endTime: "11:00",
-    },
-  ];
 
   function handleMenuPress() {
     router.push("./Menu");
@@ -78,7 +83,7 @@ export default function Home() {
     <>
       <GestureHandlerRootView style={styles.screenContainer}>
         <StatusBar backgroundColor="transparent" translucent={true} />
-        <SwapWindow />
+        <SwapWindow currentMonth={currentMonth} reservations={reservations} />
         <View
           style={{
             marginTop: 10,
@@ -145,7 +150,11 @@ export default function Home() {
           >
             Minhas reservas
           </Text>
-          <Calendar initialDate={new Date()} reservations={reservations} />
+          <Calendar
+            initialDate={new Date()}
+            onMonthChange={handleMonthChange}
+            reservations={reservations}
+          />
         </View>
       </GestureHandlerRootView>
     </>

@@ -54,9 +54,12 @@ export default function SignIn() {
           ]);
         } else {
           const groupId: string | null = await AsyncStorage.getItem("groupId");
-          console.log(groupId);
+          // console.log(groupId);
           if (groupId) {
+            // console.log("este é o id ", returnUser.uid);
+            // console.log("este é o groupId ", groupId);
             const teste = await selectPerfil(groupId, returnUser.uid);
+            // console.log("este é o retorno do teste", teste);
             if (teste.provPassword) {
               router.push("/setPassword");
             } else {

@@ -1,14 +1,9 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons"; // Ícones do expo/vector-icons
 import Colors from "@/constants/Colors";
 import { router } from "expo-router";
+import { Alert } from "react-native";
 
 interface Reservation {
   id: number;
@@ -21,11 +16,13 @@ interface Reservation {
 interface CalendarProps {
   initialDate?: Date;
   reservations?: Reservation[];
+  onMonthChange?: (month: Date) => void;
 }
 
 const Calendar: React.FC<CalendarProps> = ({
   initialDate = new Date(),
   reservations = [],
+  onMonthChange,
 }) => {
   const [currentMonth, setCurrentMonth] = useState<Date>(initialDate);
 
@@ -67,15 +64,19 @@ const Calendar: React.FC<CalendarProps> = ({
   };
 
   const handlePreviousMonth = () => {
-    setCurrentMonth(
-      (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1),
-    );
+    setCurrentMonth((prev) => {
+      const newMonth = new Date(prev.getFullYear(), prev.getMonth() - 1, 1);
+      onMonthChange?.(newMonth);
+      return newMonth;
+    });
   };
 
   const handleNextMonth = () => {
-    setCurrentMonth(
-      (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1),
-    );
+    setCurrentMonth((prev) => {
+      const newMonth = new Date(prev.getFullYear(), prev.getMonth() + 1, 1);
+      onMonthChange?.(newMonth);
+      return newMonth;
+    });
   };
 
   const generateCalendar = () => {
@@ -115,8 +116,22 @@ const Calendar: React.FC<CalendarProps> = ({
   const weeks = generateCalendar();
 
   function handlePress(date: Date) {
+    const today = new Date();
+  
+    // Remove o horário da data atual para comparar apenas as datas
+    today.setHours(0, 0, 0, 0);
+    
+    if (date < today) {
+      Alert.alert(
+        "Data inválida",
+        "Não é possível fazer um agendamento em uma data passada.",
+        [{ text: "OK" }]
+      );
+      return; // Impede o fluxo de continuar
+    }
+  
     const dataString = date.toISOString();
-    console.log(date.toISOString());
+    console.log(dataString);
     router.push({
       pathname: "/ListaSalas",
       params: { selectDate: dataString },

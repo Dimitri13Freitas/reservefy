@@ -16,6 +16,7 @@ export default function Index() {
     setLoad(true);
     const fetchSalas = async () => {
       const salasData = await listaSalas();
+      // console.log(salasData);
       setSalas(salasData);
       setLoad(false);
     };
@@ -43,7 +44,7 @@ export default function Index() {
               <TouchableOpacity
                 style={styles.salaContainer}
                 onPress={() => {
-                  console.log(item.id);
+                  // console.log(item.id);
                   router.push({
                     pathname: "/Reserva",
                     params: { salaId: item.id, ...params },

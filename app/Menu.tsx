@@ -4,8 +4,11 @@ import { router } from "expo-router";
 import styles from "../constants/styles";
 import { FontAwesome } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
+import { auth } from "@/firebaseConfig";
 
 export default function Menu() {
+  const nomeUser = auth.currentUser?.displayName;
+
   return (
     <View
       style={[styles.screenContainer, { width: "100%", alignItems: "center" }]}
@@ -18,7 +21,7 @@ export default function Menu() {
             color={Colors.secundary.main}
           />
           <Text style={[styles.textDarkColor, { fontSize: 18, marginTop: 10 }]}>
-            Nome Do usuário
+            {nomeUser ? nomeUser : "nome do usuário"}
           </Text>
         </View>
         <View

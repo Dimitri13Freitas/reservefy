@@ -1,11 +1,12 @@
 import React from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import styles from "@/constants/styles";
-import { useGlobalSearchParams } from "expo-router";
+import { router, useGlobalSearchParams } from "expo-router";
 import { Input } from "@/components/Input";
 import Colors from "@/constants/Colors";
 import { Button } from "@/components/Button";
-import { criarReserva } from "@/firebaseConfig";
+import { criarReserva, selectSala } from "@/firebaseConfig";
+import { Load } from "@/components/Load";
 
 export default function Reserva() {
   const [nameReserva, setNameReserva] = React.useState("");
@@ -13,6 +14,8 @@ export default function Reserva() {
   const [selectedHorarios, setSelectedHorarios] = React.useState<string[]>([]); // Armazena os horários selecionados
   const params: any = useGlobalSearchParams();
   const selectedDate: Date = new Date(params.selectDate);
+  const [horarioInicial, setHorarioInicial] = React.useState<any>();
+  const [horarioFinal, setHorarioFinal] = React.useState<any>();
 
   function validateForm() {
     let isValid = true;
@@ -32,17 +35,47 @@ export default function Reserva() {
     return isValid;
   }
 
+  function setTimeToDateWithOffset(dateString: string, timeString: string) {
+    const date = new Date(dateString);
+
+    const [hours, minutes] = timeString.split(":").map(Number);
+
+    const adjustedHours = hours + 3;
+
+    date.setUTCHours(adjustedHours, minutes, 0, 0);
+
+    return date.toISOString();
+  }
+
   async function handleReserva() {
     if (validateForm()) {
-      const teste = selectedDate;
-      console.log(selectedHorarios);
-      console.log(teste.replace("00:00", "seila"));
-      // const returnReserva = await criarReserva(params.salaId, )
+      // console.log(selectedHorarios);S
+      let horaInicio: any = selectedHorarios[0].split(" - ")[0];
+      const horaFinal =
+        selectedHorarios[selectedHorarios.length - 1].split(" - ")[1];
 
-      // console.log("Reserva efetuada:");
-      // console.log("Nome da reserva:", nameReserva);
-      // console.log("Horários selecionados:", selectedHorarios);
-      // console.log("Data:", selectedDate);
+      const dataInicio = setTimeToDateWithOffset(
+        selectedDate.toISOString(),
+        horaInicio,
+      );
+      const dataFinal = setTimeToDateWithOffset(
+        selectedDate.toISOString(),
+        horaFinal,
+      );
+
+      const returnReserva = await criarReserva(
+        params.salaId,
+        dataInicio,
+        dataFinal,
+        nameReserva,
+      );
+
+      if (returnReserva) {
+        Alert.alert("Sua reserva foi feita com sucesso!!");
+        router.push("/Home");
+      } else {
+        console.log("deu eerrado");
+      }
     }
   }
 
@@ -58,36 +91,54 @@ export default function Reserva() {
     return horariosDisponiveis;
   }
 
-  const intervalos = gerarIntervalos(9, 18);
+  async function handleSelectSala() {
+    const salaData = await selectSala(params.salaId);
+    if (salaData) {
+      let horaInicioNumber = salaData.horaDisp.horarioInicio;
+      horaInicioNumber = horaInicioNumber.split(":")[0];
+      let horaFinalNumber = salaData.horaDisp.horarioFinal;
+      horaFinalNumber = horaFinalNumber.split(":")[0];
+      setHorarioFinal(+horaFinalNumber);
+      setHorarioInicial(+horaInicioNumber);
+    }
+  }
+
+  React.useEffect(() => {
+    handleSelectSala();
+  }, []);
+
+  const intervalos =
+    horarioFinal && horarioInicial
+      ? gerarIntervalos(horarioInicial, horarioFinal)
+      : null;
 
   function isValidSelection(horario: string) {
     if (selectedHorarios.length === 0) {
       return true;
     }
 
-    const index = intervalos.findIndex(
-      (intervalo) => `${intervalo.inicio} - ${intervalo.fim}` === horario,
-    );
-    const allSelectedIndexes = selectedHorarios.map((selectedHorario) =>
-      intervalos.findIndex(
-        (intervalo) =>
-          `${intervalo.inicio} - ${intervalo.fim}` === selectedHorario,
-      ),
-    );
+    if (intervalos) {
+      const index = intervalos.findIndex(
+        (intervalo) => `${intervalo.inicio} - ${intervalo.fim} === horario`,
+      );
+      const allSelectedIndexes = selectedHorarios.map((selectedHorario) =>
+        intervalos.findIndex(
+          (intervalo) =>
+            `${intervalo.inicio} - ${intervalo.fim} === selectedHorario`,
+        ),
+      );
 
-    const minIndex = Math.min(...allSelectedIndexes); // Menor índice selecionado
-    const maxIndex = Math.max(...allSelectedIndexes); // Maior índice selecionado
+      const minIndex = Math.min(...allSelectedIndexes);
+      const maxIndex = Math.max(...allSelectedIndexes);
 
-    // Permitir seleção apenas se o índice for consecutivo a algum extremo (minIndex ou maxIndex)
-    return index === minIndex - 1 || index === maxIndex + 1;
+      return index === minIndex - 1 || index === maxIndex + 1;
+    }
   }
 
   function toggleHorarioSelection(horario: string) {
     if (selectedHorarios.includes(horario)) {
-      // Remove o horário se ele já estiver selecionado
       setSelectedHorarios((prev) => prev.filter((h) => h !== horario));
     } else if (isValidSelection(horario)) {
-      // Adiciona o horário somente se for uma seleção válida
       setSelectedHorarios((prev) => [...prev, horario]);
     } else {
       alert(
@@ -126,36 +177,40 @@ export default function Reserva() {
         <Text style={{ marginTop: 20, marginBottom: 8, fontSize: 16 }}>
           Escolha os Horários:
         </Text>
-        <ScrollView style={{ height: 300 }}>
-          {intervalos.map((intervalo, index) => {
-            const horarioLabel = `${intervalo.inicio} - ${intervalo.fim}`;
-            return (
-              <TouchableOpacity
-                key={index}
-                onPress={() => toggleHorarioSelection(horarioLabel)}
-                style={{
-                  padding: 10,
-                  backgroundColor: selectedHorarios.includes(horarioLabel)
-                    ? Colors.primary.main
-                    : Colors.white.light,
-                  // color: Colors.secundary.main,
-                  marginBottom: 5,
-                  borderRadius: 8,
-                }}
-              >
-                <Text
+        {intervalos ? (
+          <ScrollView style={{ height: 300 }}>
+            {intervalos.map((intervalo, index) => {
+              const horarioLabel = `${intervalo.inicio} - ${intervalo.fim}`;
+              return (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => toggleHorarioSelection(horarioLabel)}
                   style={{
-                    color: selectedHorarios.includes(horarioLabel)
-                      ? Colors.white.light
-                      : Colors.secundary.main,
+                    padding: 10,
+                    backgroundColor: selectedHorarios.includes(horarioLabel)
+                      ? Colors.primary.main
+                      : Colors.white.light,
+                    marginBottom: 5,
+                    borderRadius: 8,
                   }}
                 >
-                  {horarioLabel.replace("-", "-----")}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+                  <Text
+                    style={{
+                      color: selectedHorarios.includes(horarioLabel)
+                        ? Colors.white.light
+                        : Colors.secundary.main,
+                    }}
+                  >
+                    {horarioLabel.replace("-", "-----")}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        ) : (
+          <Load />
+        )}
+
         <Button onPress={handleReserva} text="Reservar horários" />
       </View>
     </View>
