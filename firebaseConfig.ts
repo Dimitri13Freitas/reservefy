@@ -22,6 +22,8 @@ import {
   collection,
   query,
   where,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -399,6 +401,50 @@ async function fetchUsers() {
   }
 }
 
+async function addAdminRole(userId: string): Promise<boolean | undefined> {
+  try {
+    const groupId = await AsyncStorage.getItem("groupId");
+    if (!groupId) {
+      throw new Error("Group ID não encontrado");
+    }
+    // Referência ao documento do usuário no Firestore
+    const userDocRef = doc(db, `/grupo/${groupId}/users`, userId);
+
+    // Atualiza o campo `role`, adicionando "admin" se ainda não estiver presente
+    await updateDoc(userDocRef, {
+      role: arrayUnion("admin"),
+    });
+
+    console.log(`Admin role adicionado para o usuário com ID: ${userId}`);
+    return true;
+  } catch (error) {
+    console.error("Erro ao adicionar papel de admin:", error);
+    return false;
+  }
+}
+
+async function removeAdminRole(userId: string): Promise<boolean | undefined> {
+  try {
+    const groupId = await AsyncStorage.getItem("groupId");
+    if (!groupId) {
+      throw new Error("Group ID não encontrado");
+    }
+    // Referência ao documento do usuário no Firestore
+    const userDocRef = doc(db, `/grupo/${groupId}/users`, userId);
+
+    // Atualiza o campo `role`, adicionando "admin" se ainda não estiver presente
+    await updateDoc(userDocRef, {
+      role: arrayRemove("admin"),
+    });
+
+    console.log(`Admin role removido para o usuário com ID: ${userId}`);
+    return true;
+  } catch (error) {
+    console.error("Erro ao remover papel de admin:", error);
+    return false;
+  }
+}
+
 export {
   auth,
   User,
@@ -414,6 +460,8 @@ export {
   criarReserva,
   ListaReservas,
   selectSala,
+  addAdminRole,
+  removeAdminRole,
   getReservasParaData,
   db,
 };
