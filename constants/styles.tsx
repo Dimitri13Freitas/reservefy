@@ -8,6 +8,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 10,
   },
+  userName: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: Colors.secundary.main,
+  },
+  userTypeAccount: {
+    fontSize: 12,
+    fontWeight: "semibold",
+    color: Colors.black.opacity(0.5),
+  },
   textLightColor: {
     color: Colors.secundary.light,
   },
@@ -34,7 +44,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 40,
   },
-
   simpleLink: {
     marginTop: 16,
     color: Colors.secundary.light,
@@ -52,6 +61,15 @@ const styles = StyleSheet.create({
   buttonText: {
     color: Colors.white.main,
     fontSize: 16,
+  },
+  smoothText: {
+    color: Colors.secundary.light,
+    fontWeight: "600",
+    opacity: 0.6,
+    fontSize: 18,
+    textAlign: "center",
+    marginTop: 40,
+    paddingBottom: 50,
   },
   input: {
     fontSize: 16,

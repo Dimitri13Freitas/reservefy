@@ -44,7 +44,7 @@ export function Input({ placeholder, type, label, err, ...props }: InputProps) {
             placeholder={placeholder}
             onFocus={() => setFocus(true)}
             onBlur={() => setFocus(false)}
-            style={{ padding: 12, flex: 1 }}
+            style={{ padding: 12, flex: 1, fontSize: 16 }}
             secureTextEntry={showPass}
           />
           <TouchableOpacity
@@ -55,7 +55,7 @@ export function Input({ placeholder, type, label, err, ...props }: InputProps) {
           >
             <Entypo
               name={showPass ? "eye" : "eye-with-line"}
-              size={26}
+              size={22}
               color={Colors.secundary.main}
             />
           </TouchableOpacity>

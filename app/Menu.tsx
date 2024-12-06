@@ -48,7 +48,10 @@ export default function Menu() {
               </Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.menuOptionComponent}>
+          <TouchableOpacity
+            onPress={() => router.push("/GerenciaUsers")}
+            style={styles.menuOptionComponent}
+          >
             <Text style={styles.menuOptionTitle}>Gerenciar Membros</Text>
             <Text style={styles.menuOptionDesc}>
               Gerencie os membros do grupo para organizar reservas.
@@ -63,10 +66,10 @@ export default function Menu() {
               Registre um novo espaço no seu grupo
             </Text>
           </TouchableOpacity>
-          <Pressable style={styles.menuOptionComponent}>
+          {/* <Pressable style={styles.menuOptionComponent}>
             <Text style={styles.menuOptionTitle}>Excluir Grupo</Text>
             <Text style={styles.menuOptionDesc}></Text>
-          </Pressable>
+          </Pressable> */}
         </View>
       </View>
     </View>

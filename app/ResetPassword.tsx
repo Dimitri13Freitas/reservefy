@@ -24,7 +24,6 @@ export default function ResetPassword() {
     } else {
       setEmailError("");
     }
-
     return isValid;
   }
 

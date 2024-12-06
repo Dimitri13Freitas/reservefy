@@ -117,21 +117,21 @@ const Calendar: React.FC<CalendarProps> = ({
 
   function handlePress(date: Date) {
     const today = new Date();
-  
+
     // Remove o horário da data atual para comparar apenas as datas
     today.setHours(0, 0, 0, 0);
-    
+
     if (date < today) {
       Alert.alert(
         "Data inválida",
         "Não é possível fazer um agendamento em uma data passada.",
-        [{ text: "OK" }]
+        [{ text: "OK" }],
       );
       return; // Impede o fluxo de continuar
     }
-  
+
     const dataString = date.toISOString();
-    console.log(dataString);
+    // console.log(dataString);
     router.push({
       pathname: "/ListaSalas",
       params: { selectDate: dataString },

@@ -5,7 +5,11 @@ import { router, useGlobalSearchParams } from "expo-router";
 import { Input } from "@/components/Input";
 import Colors from "@/constants/Colors";
 import { Button } from "@/components/Button";
-import { criarReserva, selectSala } from "@/firebaseConfig";
+import {
+  criarReserva,
+  selectSala,
+  getReservasParaData,
+} from "@/firebaseConfig";
 import { Load } from "@/components/Load";
 
 export default function Reserva() {
@@ -16,6 +20,27 @@ export default function Reserva() {
   const selectedDate: Date = new Date(params.selectDate);
   const [horarioInicial, setHorarioInicial] = React.useState<any>();
   const [horarioFinal, setHorarioFinal] = React.useState<any>();
+  const [reservas, setReservas] = React.useState<any>();
+  const [intervalos, setIntervalos] = React.useState<any>();
+  const [load, setLoad] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    handleSelectSala();
+    if (horarioFinal && horarioInicial) {
+      setIntervalos(() => gerarIntervalos(horarioInicial, horarioFinal));
+    } else {
+      console.log("deum ruim");
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (horarioFinal && horarioInicial) {
+      console.log("deum bom");
+      setIntervalos(() => gerarIntervalos(horarioInicial, horarioFinal));
+    } else {
+      console.log("deum ruim");
+    }
+  }, [reservas]);
 
   function validateForm() {
     let isValid = true;
@@ -49,7 +74,8 @@ export default function Reserva() {
 
   async function handleReserva() {
     if (validateForm()) {
-      // console.log(selectedHorarios);S
+      setLoad(true);
+      // console.log(selectedHorarios);
       let horaInicio: any = selectedHorarios[0].split(" - ")[0];
       const horaFinal =
         selectedHorarios[selectedHorarios.length - 1].split(" - ")[1];
@@ -71,10 +97,26 @@ export default function Reserva() {
       );
 
       if (returnReserva) {
-        Alert.alert("Sua reserva foi feita com sucesso!!");
-        router.push("/Home");
+        setLoad(false);
+        Alert.alert(
+          "Sala reserva foi feita com sucesso!!",
+          "Deseja reservar mais?",
+          [
+            { text: "Não", onPress: () => router.push("/Home") },
+            {
+              text: "Sim",
+              onPress: () => {
+                setSelectedHorarios([]);
+                setIntervalos(null);
+                setNameReserva("");
+              },
+            },
+          ],
+        );
       } else {
-        console.log("deu eerrado");
+        // console.log("deu eerrado");
+        alert("Algo deu errado, tente novamente mais tarde.");
+        router.push("/Home");
       }
     }
   }
@@ -88,7 +130,44 @@ export default function Reserva() {
       horariosDisponiveis.push({ inicio, fim });
     }
 
-    return horariosDisponiveis;
+    // console.log(reservas);
+    if (reservas) {
+      // console.log();
+      const teste = verificarDisponibilidade(reservas, horariosDisponiveis);
+
+      teste.map((e: any) => {
+        console.log(e.inicio, "----", e.fim, e.status);
+      });
+      return verificarDisponibilidade(reservas, horariosDisponiveis);
+    }
+    // return horariosDisponiveis;
+  }
+
+  function ajustarFusoHorario(dataISO: any) {
+    const data = new Date(dataISO);
+    data.setHours(data.getHours() - 3); // Subtração de 3 horas
+    return data.toISOString().slice(11, 16); // Retorna no formato HH:mm
+  }
+
+  function verificarDisponibilidade(reservas: any, intervalos: any) {
+    // Converter horários de reservas para formato HH:mm
+    const reservasConvertidas = reservas.map((reserva: any) => ({
+      inicio: ajustarFusoHorario(reserva.startTime),
+      fim: ajustarFusoHorario(reserva.endTime),
+    }));
+
+    // Verificar cada intervalo
+    return intervalos.map((intervalo: any) => {
+      const ocupado = reservasConvertidas.some(
+        (reserva: any) =>
+          // Verificar sobreposição
+          !(reserva.fim <= intervalo.inicio || reserva.inicio >= intervalo.fim),
+      );
+      return {
+        ...intervalo,
+        status: ocupado ? "ocupado" : "disponível",
+      };
+    });
   }
 
   async function handleSelectSala() {
@@ -100,45 +179,43 @@ export default function Reserva() {
       horaFinalNumber = horaFinalNumber.split(":")[0];
       setHorarioFinal(+horaFinalNumber);
       setHorarioInicial(+horaInicioNumber);
+      const retornoReservas = await getReservasParaData(
+        params.salaId,
+        selectedDate.toISOString().split("T")[0],
+      );
+      // console.log(retornoReservas);
+      setReservas(retornoReservas);
     }
   }
-
-  React.useEffect(() => {
-    handleSelectSala();
-  }, []);
-
-  const intervalos =
-    horarioFinal && horarioInicial
-      ? gerarIntervalos(horarioInicial, horarioFinal)
-      : null;
 
   function isValidSelection(horario: string) {
     if (selectedHorarios.length === 0) {
       return true;
     }
 
-    if (intervalos) {
-      const index = intervalos.findIndex(
-        (intervalo) => `${intervalo.inicio} - ${intervalo.fim} === horario`,
-      );
-      const allSelectedIndexes = selectedHorarios.map((selectedHorario) =>
-        intervalos.findIndex(
-          (intervalo) =>
-            `${intervalo.inicio} - ${intervalo.fim} === selectedHorario`,
-        ),
-      );
+    const index = intervalos.findIndex(
+      (intervalo: any) => `${intervalo.inicio} - ${intervalo.fim}` === horario,
+    );
+    const allSelectedIndexes = selectedHorarios.map((selectedHorario) =>
+      intervalos.findIndex(
+        (intervalo: any) =>
+          `${intervalo.inicio} - ${intervalo.fim}` === selectedHorario,
+      ),
+    );
 
-      const minIndex = Math.min(...allSelectedIndexes);
-      const maxIndex = Math.max(...allSelectedIndexes);
+    const minIndex = Math.min(...allSelectedIndexes); // Menor índice selecionado
+    const maxIndex = Math.max(...allSelectedIndexes); // Maior índice selecionado
 
-      return index === minIndex - 1 || index === maxIndex + 1;
-    }
+    // Permitir seleção apenas se o índice for consecutivo a algum extremo (minIndex ou maxIndex)
+    return index === minIndex - 1 || index === maxIndex + 1;
   }
 
   function toggleHorarioSelection(horario: string) {
     if (selectedHorarios.includes(horario)) {
+      // Remove o horário se ele já estiver selecionado
       setSelectedHorarios((prev) => prev.filter((h) => h !== horario));
     } else if (isValidSelection(horario)) {
+      // Adiciona o horário somente se for uma seleção válida
       setSelectedHorarios((prev) => [...prev, horario]);
     } else {
       alert(
@@ -146,10 +223,14 @@ export default function Reserva() {
       );
     }
   }
-
   return (
     <View style={[styles.screenContainer, { width: "100%" }]}>
-      <View style={{ marginTop: 40, position: "relative" }}>
+      <View
+        style={[
+          { marginTop: 40, position: "relative" },
+          load ? { flex: 1 } : null,
+        ]}
+      >
         <Input
           type="text"
           value={nameReserva}
@@ -179,30 +260,61 @@ export default function Reserva() {
         </Text>
         {intervalos ? (
           <ScrollView style={{ height: 300 }}>
-            {intervalos.map((intervalo, index) => {
+            {intervalos.map((intervalo: any, index: any) => {
               const horarioLabel = `${intervalo.inicio} - ${intervalo.fim}`;
               return (
                 <TouchableOpacity
                   key={index}
                   onPress={() => toggleHorarioSelection(horarioLabel)}
-                  style={{
-                    padding: 10,
-                    backgroundColor: selectedHorarios.includes(horarioLabel)
-                      ? Colors.primary.main
-                      : Colors.white.light,
-                    marginBottom: 5,
-                    borderRadius: 8,
-                  }}
+                  style={[
+                    {
+                      padding: 10,
+                      backgroundColor: selectedHorarios.includes(horarioLabel)
+                        ? Colors.primary.main
+                        : Colors.white.light,
+                      marginBottom: 5,
+                      borderRadius: 8,
+                    },
+                  ]}
+                  {...(intervalo.status === "ocupado"
+                    ? { disabled: true }
+                    : null)}
                 >
-                  <Text
+                  <View
                     style={{
-                      color: selectedHorarios.includes(horarioLabel)
-                        ? Colors.white.light
-                        : Colors.secundary.main,
+                      display: "flex",
+                      flexDirection: "row",
+                      alignItems: "center",
+                      justifyContent: "space-between",
                     }}
                   >
-                    {horarioLabel.replace("-", "-----")}
-                  </Text>
+                    <Text
+                      style={[
+                        {
+                          color: selectedHorarios.includes(horarioLabel)
+                            ? Colors.white.light
+                            : Colors.secundary.main,
+                          maxWidth: 200,
+                        },
+                        intervalo.status === "ocupado"
+                          ? { color: Colors.black.opacity(0.4) }
+                          : null,
+                      ]}
+                    >
+                      {horarioLabel.replace("-", "-----")}
+                    </Text>
+                    {intervalo.status === "ocupado" ? (
+                      <Text
+                        style={{
+                          // backgroundColor: "red",
+                          maxWidth: 200,
+                          color: Colors.black.opacity(0.4),
+                        }}
+                      >
+                        Indisponível
+                      </Text>
+                    ) : null}
+                  </View>
                 </TouchableOpacity>
               );
             })}

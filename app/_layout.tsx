@@ -15,15 +15,26 @@ export default function RootLayout() {
       }}
     >
       <Stack.Screen options={{ headerShown: false }} name="index" />
-      <Stack.Screen name="SignUp" />
+      <Stack.Screen name="SignUp" options={{ title: "Cadastro" }} />
       <Stack.Screen options={{ headerShown: false }} name="SignIn" />
-      <Stack.Screen name="ResetPassword" />
-      <Stack.Screen name="setPassword" />
+      <Stack.Screen
+        name="ResetPassword"
+        options={{ title: "Redefinir Senha" }}
+      />
+      <Stack.Screen
+        name="setPassword"
+        options={{ title: "Criar Nova Senha" }}
+      />
       <Stack.Screen options={{ headerShown: false }} name="Home" />
       <Stack.Screen name="Menu" />
-      <Stack.Screen name="AddMember" />
-      <Stack.Screen name="AddSala" />
-      <Stack.Screen name="ListaSalas" />
+      <Stack.Screen name="AddMember" options={{ title: "Adicionar Membro" }} />
+      <Stack.Screen name="AddSala" options={{ title: "Adicionar Sala" }} />
+      <Stack.Screen name="ListaSalas" options={{ title: "Salas" }} />
+      <Stack.Screen name="Reserva" options={{ title: "Reserva de sala" }} />
+      <Stack.Screen
+        name="GerenciaUsers"
+        options={{ title: "Gerenciar Membros" }}
+      />
     </Stack>
   );
 }

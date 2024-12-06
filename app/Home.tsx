@@ -18,11 +18,13 @@ import { router } from "expo-router";
 import LottieView from "lottie-react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Load } from "@/components/Load";
 
 export default function Home() {
   const navigation = useNavigation();
   const [reservations, setReservations] = React.useState<any>([]);
   const [currentMonth, setCurrentMonth] = React.useState<Date>(new Date());
+  const [load, setLoad] = React.useState<boolean>(false);
 
   function handleMonthChange(month: Date) {
     setCurrentMonth(month);
@@ -65,10 +67,13 @@ export default function Home() {
   }, []);
 
   async function handleReservas() {
+    setLoad(true);
     const retornoReservas: any = await ListaReservas();
     if (retornoReservas) {
       setReservations(retornoReservas);
+      setLoad(false);
     } else {
+      setLoad(false);
       console.log("deu ruim o Retorno reservas Home", retornoReservas);
     }
   }

@@ -92,7 +92,7 @@ async function createUser(
       const password: any = await AsyncStorage.getItem("pass");
       if (email && password) {
         const returnUser = await logIn(email, password);
-        console.log("sobre o login", returnUser);
+        // console.log("sobre o login", returnUser);
       } else {
         console.log("no caso n tem como pois email e senha n existe do login");
       }
@@ -332,6 +332,7 @@ async function ListaReservas() {
   try {
     const groupId = await AsyncStorage.getItem("groupId");
     if (!groupId) {
+      console.log("este é o log");
       throw new Error("Group ID não encontrado");
     }
 
@@ -362,30 +363,41 @@ async function ListaReservas() {
   }
 }
 
-async function verificaSalas() {
-  // Fazer passo a passo sem chatGPT
-  // compara dados banco e trazer infos de la para validação
+async function getReservasParaData(espacoId: string, data: string) {
+  // console.log("getReservasParaData iniciou.....");
+  const groupId = await AsyncStorage.getItem("groupId");
+  if (!groupId) {
+    throw new Error("Group ID não encontrado");
+  }
+  const reservasRef = collection(db, `grupo/${groupId}/reservas`);
+  const q = query(
+    reservasRef,
+    where("espacoId", "==", espacoId),
+    where("startTime", ">=", `${data}T00:00:00.000Z`),
+    where("startTime", "<", `${data}T23:59:59.999Z`),
+  );
+  const querySnapshot = await getDocs(q);
+  const reservas = querySnapshot.docs.map((doc) => doc.data());
+  return reservas;
 }
 
-// async function verificarDisponibilidade(groupId: string, espacoId: string, inicio: string, fim: string) {
-//   const reservasRef = collection(
-//     db,
-//     `grupo/${groupId}/espacos/${espacoId}/reservas`,
-//   );
-
-//   // Convertendo os horários para o formato que Firebase pode comparar
-//   const startTime = new Date(`2024-11-21T${inicio}:00Z`).toISOString(); // Exemplo de horário 09:00
-//   const endTime = new Date(`2024-11-21T${fim}:00Z`).toISOString(); // Exemplo de horário 10:00
-
-//   const q = query(
-//     reservasRef,
-//     where("startTime", "<", endTime), // Reserva começa antes de terminar o novo intervalo
-//     where("endTime", ">", startTime), // Reserva termina depois de começar o novo intervalo
-//   );
-
-//   const snapshot = await getDocs(q);
-//   return snapshot.empty; // Se a query não encontrar documentos, significa que está disponível
-// }
+async function fetchUsers() {
+  try {
+    const groupId = await AsyncStorage.getItem("groupId");
+    if (!groupId) {
+      throw new Error("Group ID não encontrado");
+    }
+    const q = query(collection(db, `grupo/${groupId}/users`));
+    const querySnapshot = await getDocs(q);
+    const usersList = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return usersList;
+  } catch (error) {
+    console.error("Erro ao buscar usuários:", error);
+  }
+}
 
 export {
   auth,
@@ -397,9 +409,11 @@ export {
   listaSalas,
   resetPassword,
   updateProvPassword,
+  fetchUsers,
   createSala,
   criarReserva,
   ListaReservas,
   selectSala,
+  getReservasParaData,
   db,
 };

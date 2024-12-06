@@ -77,7 +77,7 @@ export default function AddMember() {
         if (returnUser.code.includes("email-already-in-use")) {
           Alert.alert("Este email já possui cadastro", "Tentar novamente?", [
             { text: "Sim" },
-            { text: "Não", onPress: () => router.push("/SignIn") },
+            { text: "Não", onPress: () => router.push("/Home") },
           ]);
         }
       }
