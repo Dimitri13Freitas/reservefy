@@ -113,8 +113,6 @@ export default function GerenciaUsers() {
         },
       ],
     );
-    // const returnAddAdminRole = await removeAdminRole(userId);
-    // console.log(returnAddAdminRole);
   }
 
   return (

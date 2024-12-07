@@ -99,7 +99,7 @@ export default function Reserva() {
       if (returnReserva) {
         setLoad(false);
         Alert.alert(
-          "Sala reserva foi feita com sucesso!!",
+          "Sua reserva foi feita com sucesso!!",
           "Deseja reservar mais?",
           [
             { text: "Não", onPress: () => router.push("/Home") },

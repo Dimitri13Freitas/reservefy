@@ -4,7 +4,7 @@ import styles from "../constants/styles";
 import LottieView from "lottie-react-native";
 import { Input } from "@/components/Input";
 import { Button } from "@/components/Button";
-import { logIn, selectPerfil } from "../firebaseConfig";
+import { logIn, selectPerfil, User } from "../firebaseConfig";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Load } from "@/components/Load";
@@ -47,25 +47,18 @@ export default function SignIn() {
     setLoad(true);
     try {
       if (validateForm()) {
-        const returnUser = await logIn(email, password);
-        if (returnUser.code) {
-          Alert.alert("Seu email ou senha estão incorretos.", "", [
-            { text: "OK" },
-          ]);
+        const returnUser:
+          | User
+          | {
+              error: string;
+            } = await logIn(email, password);
+        // console.log(returnUser);
+        if (returnUser?.error) {
+          Alert.alert("Erro", returnUser.error); // Exibe a mensagem de erro
         } else {
-          const groupId: string | null = await AsyncStorage.getItem("groupId");
-          // console.log(groupId);
-          if (groupId) {
-            // console.log("este é o id ", returnUser.uid);
-            // console.log("este é o groupId ", groupId);
-            const teste = await selectPerfil(groupId, returnUser.uid);
-            // console.log("este é o retorno do teste", teste);
-            if (teste.provPassword) {
-              router.push("/setPassword");
-            } else {
-              router.push("/Home");
-            }
-          }
+          // console.log("Login bem-sucedido", returnUser);
+          // Redirecionar o usuário para a home
+          router.push("/Home"); // Ou a rota correspondente
         }
       }
       setLoad(false);

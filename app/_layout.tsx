@@ -31,6 +31,7 @@ export default function RootLayout() {
       <Stack.Screen name="AddSala" options={{ title: "Adicionar Sala" }} />
       <Stack.Screen name="ListaSalas" options={{ title: "Salas" }} />
       <Stack.Screen name="Reserva" options={{ title: "Reserva de sala" }} />
+      <Stack.Screen name="UserAtas" options={{ title: "Atas de Reunião" }} />
       <Stack.Screen
         name="GerenciaUsers"
         options={{ title: "Gerenciar Membros" }}

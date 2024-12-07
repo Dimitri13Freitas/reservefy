@@ -43,6 +43,7 @@ export default function Home() {
               onPress: async () => {
                 await auth.signOut();
                 await AsyncStorage.setItem("groupId", "");
+                await AsyncStorage.setItem("role", "");
                 navigation.reset({
                   index: 0,
                   routes: [{ name: "SignIn" }],
@@ -153,7 +154,7 @@ export default function Home() {
               { fontSize: 30, fontWeight: "normal", marginTop: 40 },
             ]}
           >
-            Minhas reservas
+            Selecione um dia
           </Text>
           <Calendar
             initialDate={new Date()}

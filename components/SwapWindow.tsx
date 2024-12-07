@@ -62,7 +62,7 @@ const SwapWindow: React.FC<SwapWindowProps> = ({
       >
         {reservations.length != 0 ? (
           <ScrollView style={{ overflow: "hidden" }}>
-            <Text style={styles.sheetTitle}>Reservas:</Text>
+            <Text style={styles.sheetTitle}>Minhas reservas:</Text>
             {filteredReservations.length === 0 ? (
               <Text style={styles.smoothText}>
                 Você ainda não tem reservas neste mês.

@@ -5,9 +5,20 @@ import styles from "../constants/styles";
 import { FontAwesome } from "@expo/vector-icons";
 import Colors from "@/constants/Colors";
 import { auth } from "@/firebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Menu() {
   const nomeUser = auth.currentUser?.displayName;
+  const [permission, setPermission] = React.useState<string | null>("");
+  React.useEffect(() => {
+    handlePermissions();
+  });
+
+  async function handlePermissions() {
+    const role: string | null = await AsyncStorage.getItem("role");
+    // console.log(role);
+    setPermission(role);
+  }
 
   return (
     <View
@@ -38,38 +49,51 @@ export default function Menu() {
           }}
         >
           <TouchableOpacity
-            onPress={() => router.push("./AddMember")}
+            onPress={() => router.push("/UserAtas")}
             style={styles.menuOptionComponent}
           >
             <View>
-              <Text style={styles.menuOptionTitle}>Adicionar Membro</Text>
+              <Text style={styles.menuOptionTitle}>Minhas Atas</Text>
               <Text style={styles.menuOptionDesc}>
-                Adicione membros ao grupo para fazer reservas.
+                Deixe uma inteligencia artifical fazer sua ata de Reunião.
               </Text>
             </View>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => router.push("/GerenciaUsers")}
-            style={styles.menuOptionComponent}
-          >
-            <Text style={styles.menuOptionTitle}>Gerenciar Membros</Text>
-            <Text style={styles.menuOptionDesc}>
-              Gerencie os membros do grupo para organizar reservas.
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => router.push("/AddSala")}
-            style={styles.menuOptionComponent}
-          >
-            <Text style={styles.menuOptionTitle}>Criar Sala</Text>
-            <Text style={styles.menuOptionDesc}>
-              Registre um novo espaço no seu grupo
-            </Text>
-          </TouchableOpacity>
-          {/* <Pressable style={styles.menuOptionComponent}>
-            <Text style={styles.menuOptionTitle}>Excluir Grupo</Text>
-            <Text style={styles.menuOptionDesc}></Text>
-          </Pressable> */}
+          {permission === "admin/common" ? (
+            <TouchableOpacity
+              onPress={() => router.push("./AddMember")}
+              style={styles.menuOptionComponent}
+            >
+              <View>
+                <Text style={styles.menuOptionTitle}>Adicionar Membro</Text>
+                <Text style={styles.menuOptionDesc}>
+                  Adicione membros ao grupo para fazer reservas.
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ) : null}
+          {permission === "admin" ? (
+            <TouchableOpacity
+              onPress={() => router.push("/GerenciaUsers")}
+              style={styles.menuOptionComponent}
+            >
+              <Text style={styles.menuOptionTitle}>Gerenciar Membros</Text>
+              <Text style={styles.menuOptionDesc}>
+                Gerencie os membros do grupo para organizar reservas.
+              </Text>
+            </TouchableOpacity>
+          ) : null}
+          {permission === "admin/common" ? (
+            <TouchableOpacity
+              onPress={() => router.push("/AddSala")}
+              style={styles.menuOptionComponent}
+            >
+              <Text style={styles.menuOptionTitle}>Criar Sala</Text>
+              <Text style={styles.menuOptionDesc}>
+                Registre um novo espaço no seu grupo
+              </Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
       </View>
     </View>

@@ -1,16 +1,28 @@
 import React from "react";
-import { TouchableOpacity, View, Text } from "react-native";
+import { TouchableOpacity, View, Text, ScrollView } from "react-native";
 import styles from "@/constants/styles";
 import { listaSalas } from "@/firebaseConfig";
 import { FlatList, GestureHandlerRootView } from "react-native-gesture-handler";
 import { router, useGlobalSearchParams } from "expo-router";
 import { Load } from "@/components/Load";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Colors from "@/constants/Colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Index() {
   const [salas, setSalas] = React.useState<any[]>([]);
   const [load, setLoad] = React.useState<boolean>(false);
-
   const params = useGlobalSearchParams();
+  const [permission, setPermission] = React.useState<string | null>("");
+  React.useEffect(() => {
+    handlePermissions();
+  });
+
+  async function handlePermissions() {
+    const role: string | null = await AsyncStorage.getItem("role");
+    // console.log(role);
+    setPermission(role);
+  }
 
   React.useEffect(() => {
     setLoad(true);
@@ -63,8 +75,25 @@ export default function Index() {
             )}
           />
         )}
-        {/* <Load /> */}
       </View>
+      {permission === "admin" || permission === "admin/common" ? (
+        <TouchableOpacity
+          style={{
+            backgroundColor: Colors.secundary.main,
+            paddingVertical: 10,
+            paddingHorizontal: 24,
+            borderRadius: 8,
+            alignItems: "center",
+            position: "absolute",
+            bottom: 20,
+            right: 20,
+            width: "100%",
+          }}
+          onPress={() => router.push("/AddSala")}
+        >
+          <AntDesign name="plus" size={24} color={Colors.white.main} />
+        </TouchableOpacity>
+      ) : null}
     </GestureHandlerRootView>
   );
 }

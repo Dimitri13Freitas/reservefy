@@ -127,7 +127,7 @@ async function createGroup(groupName: string): Promise<void> {
   }
 }
 
-async function findGroupIdForUser(userId: string): Promise<string | null> {
+async function findGroupIdForUser(userId: string): Promise<string | boolean> {
   try {
     // Busca todos os grupos
     const groupsCollection = collection(db, "grupo");
@@ -146,17 +146,17 @@ async function findGroupIdForUser(userId: string): Promise<string | null> {
       }
     }
 
-    throw new Error("Usuário não pertence a nenhum grupo");
+    return false;
+    // throw new Error("Usuário não pertence a nenhum grupo");
   } catch (error) {
     console.error("Erro ao buscar o Group ID no banco:", error);
-    return null;
+    return false;
   }
 }
 
 async function logIn(email: string, password: string) {
-  let groupId = await AsyncStorage.getItem("groupId");
-
   try {
+    // Realiza a autenticação
     const userCredential: UserCredential = await signInWithEmailAndPassword(
       auth!,
       email,
@@ -165,26 +165,41 @@ async function logIn(email: string, password: string) {
 
     const userId = userCredential.user.uid;
 
+    // Verifica se o usuário pertence a algum grupo
+    const groupId: boolean | string = await findGroupIdForUser(userId);
+
     if (!groupId) {
-      console.log(
-        "Group ID não encontrado no AsyncStorage. Buscando no banco...",
-      );
-
-      // Busca o groupId no banco com base no userId
-      groupId = await findGroupIdForUser(userId);
-
-      if (!groupId) {
-        throw new Error("Group ID não encontrado no banco de dados");
+      await auth.signOut(); // Faz logout imediatamente
+      return {
+        error:
+          "Seu email ou senha estão incorretos, verifique e tente novamente!!",
+      }; // Retorna mensagem de erro
+    } else {
+      await AsyncStorage.setItem("groupId", groupId as string);
+      const currentUser = await selectPerfil(groupId, userId);
+      // console.log(currentUser.role);
+      if (
+        currentUser.role.includes("admin") &&
+        currentUser.role.includes("common")
+      ) {
+        await AsyncStorage.setItem("role", "admin/common");
+      } else if (currentUser.role.includes("admin")) {
+        await AsyncStorage.setItem("role", "admin");
+      } else if (currentUser.role.includes("common")) {
+        await AsyncStorage.setItem("role", "common");
+      } else {
+        console.log("Rapaiz.......... tem coisa errada");
       }
-
-      // Armazena o groupId no AsyncStorage
-      await AsyncStorage.setItem("groupId", groupId);
     }
 
-    return userCredential.user;
+    // Armazena o groupId no AsyncStorage
+
+    return userCredential.user; // Retorna o usuário autenticado
   } catch (error: any) {
-    // console.error("Erro no login:", error);
-    return error;
+    return {
+      error:
+        "Seu email ou senha estão incorretos, verifique e tente novamente!!",
+    };
   }
 }
 
@@ -334,8 +349,7 @@ async function ListaReservas() {
   try {
     const groupId = await AsyncStorage.getItem("groupId");
     if (!groupId) {
-      console.log("este é o log");
-      throw new Error("Group ID não encontrado");
+      throw new Error("Group ID não encontradoooo");
     }
 
     const userId = auth.currentUser?.uid;
